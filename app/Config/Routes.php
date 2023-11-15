@@ -9,5 +9,3 @@ $routes->get('/', 'Home::index');
 
 // Login
 // Registration crud
-
-asdas
