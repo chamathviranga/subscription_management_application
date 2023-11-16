@@ -29,7 +29,6 @@
                 <div class="row">
 
                     <div class="col-12 col-md-6 mx-auto">
-
                         <?php
                         // echo session()->getFlashdata('error'); 
                         // echo validation_list_errors();
@@ -127,6 +126,22 @@
                             </div>
 
                             <div class="form-group">
+                                <label for="">Choose Subscription <span class="text-danger">*</span></label>
+                                <select name="subscription" id="" class="form-control">
+                                    <option value="">Select</option>
+                                    <?php foreach($subscriptions as $subscription): ?>
+                                        <option <?= $subscription['id'] == set_value('subscription') ? 'selected' : null; ?> value="<?= $subscription['id'] ?>"><?= $subscription['name'] ?></option>
+                                    <?php endforeach ?>
+                                </select>
+
+                                <?php if ($validation->hasError('subscription')) : ?>
+                                    <br>
+                                    <div class="text-danger mt-1"><?= $validation->getError('subscription'); ?></div>
+                                <?php endif; ?>
+
+                            </div>
+
+                            <div class="form-group">
                                 <label for="">Payment Method <span class="text-danger">*</span></label>
                                 <select name="payment_method" id="" class="form-control">
                                     <option value="">Select</option>
@@ -134,6 +149,12 @@
                                         <option <?= $method['id'] == set_value('payment_method') ? 'selected' : null; ?> value="<?= $method['id'] ?>"><?= $method['method'] ?></option>
                                     <?php endforeach ?>
                                 </select>
+
+                                <?php if ($validation->hasError('payment_method')) : ?>
+                                    <br>
+                                    <div class="text-danger mt-1"><?= $validation->getError('payment_method'); ?></div>
+                                <?php endif; ?>
+
                             </div>
 
                             <div class="form-group">

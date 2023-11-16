@@ -48,10 +48,22 @@ class CreateCustomerSubscriptionsTable extends Migration
                 'type' => 'VARCHAR',
                 'constraint' => 50,
             ],
+            'subscription_id' => [
+                'type' => 'INT',
+                'unsigned' => true,
+                'constraint' => 5,
+                'null' => false,
+            ],
             'payment_method' => [
                 'type' => 'INT',
                 'unsigned' => true,
-                'constraint' => 11,
+                'constraint' => 5,
+                'null' => false,
+            ],
+            'customer_id' => [
+                'type' => 'INT',
+                'unsigned' => true,
+                'constraint' => 5,
                 'null' => false,
             ],
             'created_at' => [
@@ -61,6 +73,8 @@ class CreateCustomerSubscriptionsTable extends Migration
 
         $this->forge->addKey('id', true);
         $this->forge->addForeignKey('payment_method', 'payment_methods', 'id', 'CASCADE', 'CASCADE');
+        $this->forge->addForeignKey('subscription_id', 'subscriptions', 'id', 'CASCADE', 'CASCADE');
+        $this->forge->addForeignKey('customer_id', 'users', 'id', 'CASCADE', 'CASCADE');
         $this->forge->createTable('customer_subscriptions');
         $this->db->query('ALTER TABLE customer_subscriptions MODIFY created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP');
     }

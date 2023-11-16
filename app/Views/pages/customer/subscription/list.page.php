@@ -40,22 +40,32 @@
                                 <tr>
                                     <th scope="col">#</th>
                                     <th scope="col">Name</th>
-                                    <th scope="col">Description</th>
-                                    <th scope="col">Status</th>
-                                    <th scope="col">Price</th>
-                                    <th scope="col">Duration</th>
+                                    <th scope="col">Email</th>
+                                    <th scope="col">Phone</th>
+                                    <th scope="col">Street</th>
+                                    <th scope="col">City</th>
+                                    <th scope="col">State</th>
+                                    <th scope="col">Postal Code</th>
+                                    <th scope="col">Country</th>
+                                    <th scope="col">Subscription</th>
+                                    <th scope="col">Payment Method</th>
                                     <th scope="col">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php foreach ($subscriptions as $key => $subscription) : ?>
+                                <?php foreach ($mySubscriptions as $key => $subscription) : ?>
                                     <tr>
                                         <th scope="row"><?= ++$key; ?></th>
                                         <td><?= $subscription['name'] ?></td>
-                                        <td><?= $subscription['description'] ?></td>
-                                        <td><?= $subscription['is_active'] ? '<span class="badge badge-success">Active</span>' : '<span class="badge badge-danger">Inactive</span>' ?></td>
-                                        <td class="text-right">LKR <?= $subscription['price'] ?></td>
-                                        <td class="text-right"><?= $subscription['duration'] ?></td>
+                                        <td><?= $subscription['email'] ?></td>
+                                        <td><?= $subscription['phone'] ?></td>
+                                        <td><?= $subscription['billing_street'] ?></td>
+                                        <td><?= $subscription['billing_city'] ?></td>
+                                        <td><?= $subscription['billing_state'] ?></td>
+                                        <td><?= $subscription['billing_postal_code'] ?></td>
+                                        <td><?= $subscription['billing_country'] ?></td>
+                                        <td><?= $subscription['subscription_name'] ?></td>
+                                        <td><?= $subscription['payment_method_name'] ?></td>
                                         <td>
                                             <a class="btn btn-info btn-sm" href=""><i class="fa fa-edit"></i>Edit</a>
                                             <a class="btn btn-danger btn-sm" href=""><i class="fa fa-trash"></i>Remove</a>

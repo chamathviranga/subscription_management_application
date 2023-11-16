@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
+use App\Models\Subscription;
+use App\Models\PaymentMethod;
 
 class CustomerSubscription extends Model
 {
@@ -12,7 +14,7 @@ class CustomerSubscription extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['name','email','phone','billing_street','billing_city','billing_state','billing_postal_code','billing_country','payment_method'];
+    protected $allowedFields    = ['name','email','phone','billing_street','billing_city','billing_state','billing_postal_code','billing_country','payment_method', 'subscription_id', 'customer_id'];
 
     // Dates
     protected $useTimestamps = false;

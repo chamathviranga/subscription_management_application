@@ -32,6 +32,8 @@ $routes->group('', ['filter' => 'session'], static function ($routes) {
 
         $routes->get('create', 'CustomerSubscriptionsController::create', ['as' => 'customer.subscription.create']);
         $routes->post('create', 'CustomerSubscriptionsController::submit', ['as' => 'customer.subscription.submit']);
+
+        $routes->get('edit/(:hash)', 'CustomerSubscriptionsController::edit', ['as' => 'customer.subscription.edit']);
     });
 
 });
