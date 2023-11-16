@@ -66,6 +66,12 @@ class CreateCustomerSubscriptionsTable extends Migration
                 'constraint' => 5,
                 'null' => false,
             ],
+            'status' => [
+                'type' => 'VARCHAR',
+                'constraint' => 20,
+                'null' => false,
+                'default' => 'active'
+            ],
             'created_at' => [
                 'type' => 'TIMESTAMP',
             ],

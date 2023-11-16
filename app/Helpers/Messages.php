@@ -19,4 +19,19 @@ class Messages {
 
     }
 
+    public static function Error() {
+        if(session()->getFlashdata('error')){
+            echo "
+                <script>
+                    Swal.fire({
+                        title: 'Error!',
+                        text: '" . session()->getFlashdata('error') . "',
+                        icon: 'error'
+                    });
+                </script>
+            ";
+        }
+
+    }
+
 }

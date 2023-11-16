@@ -38,7 +38,7 @@ class CreateSubscriptionsTable extends Migration
                 'null' => false, 
                 'default' => 0.0,
             ],
-            'price' => [
+            'duration' => [
                 'type' => 'INT',
                 'constraint' => 5,
                 'null' => false, 

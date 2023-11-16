@@ -12,7 +12,7 @@ class Subscription extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['name', 'description', 'is_active', 'price', 'duration'];
+    protected $allowedFields    = ['name', 'description', 'is_active', 'price', 'duration', 'service_id'];
 
     // Dates
     protected $useTimestamps = false;

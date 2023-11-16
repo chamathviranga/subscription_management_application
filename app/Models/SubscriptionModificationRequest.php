@@ -3,18 +3,16 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
-use App\Models\Subscription;
-use App\Models\PaymentMethod;
 
-class CustomerSubscription extends Model
+class SubscriptionModificationRequest extends Model
 {
-    protected $table            = 'customer_subscriptions';
+    protected $table            = 'subscription_modification_requests';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['name','email','phone','billing_street','billing_city','billing_state','billing_postal_code','billing_country','payment_method', 'subscription_id', 'customer_id', 'status'];
+    protected $allowedFields    = ['customer_id', 'customer_details', 'subscription_details', 'billing_details', 'personal_details'];
 
     // Dates
     protected $useTimestamps = false;

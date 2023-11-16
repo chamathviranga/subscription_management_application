@@ -4,7 +4,7 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use App\Models\Subscription;
-use \CodeIgniter\HTTP\RedirectResponse;
+use CodeIgniter\HTTP\RedirectResponse;
 
 class SubscriptionsController extends BaseController
 {
@@ -25,7 +25,7 @@ class SubscriptionsController extends BaseController
     }
 
     // Submit new subscription
-    public function submit()//: string | RedirectResponse
+    public function submit(): string|RedirectResponse
     {
         helper('form');
 
