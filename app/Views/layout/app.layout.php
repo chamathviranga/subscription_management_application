@@ -11,7 +11,9 @@
   <!-- Font Awesome -->
   <link rel="stylesheet" href="<?= base_url('/plugins/fontawesome-free/css/all.min.css'); ?>">
   <!-- Theme style -->
-  <link rel="stylesheet" href="<?= base_url('dist/css/adminlte.min.css'); ?>">
+  <link rel="stylesheet" href="<?= base_url('/dist/css/adminlte.min.css'); ?>">
+
+  <link rel="stylesheet" href="<?= base_url('/plugins/sweetalert2/sweetalert2.min.css'); ?>">
 </head>
 
 <body class="hold-transition sidebar-mini">
@@ -45,7 +47,12 @@
   <!-- AdminLTE App -->
   <script src="<?= base_url('/dist/js/adminlte.min.js'); ?>"></script>
   <!-- AdminLTE for demo purposes -->
-  <script src="<?= base_url('/dist/js/demo.js'); ?>"></script>
+  <!-- <script src="<?= base_url('/dist/js/demo.js'); ?>"></script> -->
+
+  <script src="<?= base_url('/plugins/sweetalert2/sweetalert2.min.js'); ?>"></script>
+
+  <?= $this->renderSection('scripts') ?>
+
 </body>
 
 </html>
