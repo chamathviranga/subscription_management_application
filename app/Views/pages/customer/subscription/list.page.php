@@ -69,7 +69,7 @@
                                         <td>
                                             <a class="btn btn-info btn-sm" href="<?=  url_to("customer.subscription.edit", $subscription['id']) ?>"><i class="fa fa-edit"></i>Edit</a>
                                             <a class="btn btn-warning btn-sm" href=""><i class="fas fa-ban"></i>Suspend</a>
-                                            <a class="btn btn-danger btn-sm" href=""><i class="fas fa-times"></i></i>Cancel</a>
+                                            <a class="btn btn-danger btn-sm" href="<?=  url_to("customer.subscription.cancel", $subscription['id']) ?>"><i class="fas fa-times"></i></i>Cancel</a>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>

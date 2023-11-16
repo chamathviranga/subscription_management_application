@@ -35,6 +35,9 @@ $routes->group('', ['filter' => 'session'], static function ($routes) {
 
         $routes->get('edit/(:num)', 'CustomerSubscriptionsController::edit/$1', ['as' => 'customer.subscription.edit']);
         $routes->put('edit/(:num)', 'CustomerSubscriptionsController::update/$1', ['as' => 'customer.subscription.update']);
+
+        $routes->get('cancel/(:num)', 'CustomerSubscriptionsController::cancel/$1', ['as' => 'customer.subscription.cancel']);
+
     });
 
 });

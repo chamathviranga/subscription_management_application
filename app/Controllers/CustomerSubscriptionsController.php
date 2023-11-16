@@ -6,7 +6,7 @@ use App\Controllers\BaseController;
 use App\Models\PaymentMethod;
 use App\Models\CustomerSubscription;
 use App\Models\Subscription;
-use App\Models\SubscriptionModificationRequest;
+use App\Models\CustomerRequest;
 use CodeIgniter\HTTP\RedirectResponse;
 
 
@@ -118,7 +118,7 @@ class CustomerSubscriptionsController extends BaseController
         );
     }
 
-    public function update(int $subscriptionId): string|\CodeIgniter\HTTP\RedirectResponse
+    public function update(int $subscriptionId): string|RedirectResponse
     {
         helper('form');
 
@@ -143,33 +143,73 @@ class CustomerSubscriptionsController extends BaseController
 
         $subscriptionData = $this->validator->getValidated();
 
-        $model = model(SubscriptionModificationRequest::class);
+        $model = model(CustomerRequest::class);
 
         $newPackage = $subscriptionData['subscription_upgrade'] ? $subscriptionData['subscription_upgrade'] : $subscriptionData['subscription_downgrade'];
 
         $model->save([
             'customer_id' => auth()->user()->id,
-            'customer_details' => json_encode([]),
-            'subscription_details' => json_encode([
-                'subscription_id' => $subscriptionData['subscription'],
-                'payment_method' => $subscriptionData['payment_method'],
-                'subscription_id' => empty($newPackage) ? $subscriptionData['subscription'] : $newPackage,
-                'additional_comments' => $subscriptionData['additional_comments']
-            ]),
-            'billing_details' => json_encode([
-                'billing_street' => $subscriptionData['billing_street'],
-                'billing_city' => $subscriptionData['billing_city'],
-                'billing_state' => $subscriptionData['billing_state'],
-                'billing_postal_code' => $subscriptionData['billing_postal_code'],
-                'billing_country' => $subscriptionData['billing_country'],
-            ]),
-            'personal_details' => json_encode([
-                'name' => $subscriptionData['name'],
-                'email' => $subscriptionData['email'],
-                'phone' => $subscriptionData['phone'],
+            'type' => 'subscription_modification',
+            'payload' => json_encode([
+                'subscription_details' => [
+                    'subscription_id' => $subscriptionData['subscription'],
+                    'payment_method' => $subscriptionData['payment_method'],
+                    'subscription_id' => empty($newPackage) ? $subscriptionData['subscription'] : $newPackage,
+                    'additional_comments' => $subscriptionData['additional_comments']
+                ],
+                'billing_details' => [
+                    'billing_street' => $subscriptionData['billing_street'],
+                    'billing_city' => $subscriptionData['billing_city'],
+                    'billing_state' => $subscriptionData['billing_state'],
+                    'billing_postal_code' => $subscriptionData['billing_postal_code'],
+                    'billing_country' => $subscriptionData['billing_country'],
+                ],
+                'personal_details' => [
+                    'name' => $subscriptionData['name'],
+                    'email' => $subscriptionData['email'],
+                    'phone' => $subscriptionData['phone'],
+                ]
             ])
         ]);
 
         return redirect()->back()->with('success', 'You have successfully requested an update to the subscription.');
     }
+
+
+    public function cancel($id): string
+    {
+        helper('form');
+
+        $paymentMethodsModel = new PaymentMethod();
+        $paymentMethods = $paymentMethodsModel->findAll();
+
+        $subscriptionModel = new Subscription();
+        $subscriptions = $subscriptionModel->findAll();
+
+        $CustomerSubscriptionModel = new CustomerSubscription();
+
+        $mySubscription = $CustomerSubscriptionModel
+            ->select([
+                'customer_subscriptions.*',
+                'subscriptions.name as subscription_name',
+                'subscriptions.price as subscription_price',
+                'subscriptions.duration as subscription_duration',
+                'payment_methods.method as payment_method_name'
+            ])
+            ->join('subscriptions', 'subscriptions.id = customer_subscriptions.subscription_id')
+            ->join('payment_methods', 'payment_methods.id = customer_subscriptions.payment_method')
+            ->where('customer_id', auth()->user()->id)
+            ->where('customer_subscriptions.id', (int)$id)
+            ->first();
+
+        return view(
+            'pages/customer/subscription/cancel.page.php',
+            [
+                'paymentMethods' => $paymentMethods,
+                'subscriptions' => $subscriptions,
+                'mySubscription' => $mySubscription ?? []
+            ]
+        );
+    }
+
 }

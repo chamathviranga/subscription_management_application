@@ -4,15 +4,15 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class SubscriptionModificationRequest extends Model
+class CustomerRequest extends Model
 {
-    protected $table            = 'subscription_modification_requests';
+    protected $table            = 'customer_requests';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['customer_id', 'customer_details', 'subscription_details', 'billing_details', 'personal_details'];
+    protected $allowedFields    = ['customer_id', 'type', 'payload', 'status'];
 
     // Dates
     protected $useTimestamps = false;
