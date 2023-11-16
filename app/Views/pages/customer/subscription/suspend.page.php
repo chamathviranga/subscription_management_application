@@ -8,7 +8,7 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>Cancel Package <small>(<?= $mySubscription['subscription_name']; ?>)</small></h1>
+                    <h1>Suspend Package <small>(<?= $mySubscription['subscription_name']; ?>)</small></h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
@@ -141,9 +141,9 @@
 
 
                         <section class="bg-light rounded p-2 mt-1 mb-1">
-                            <h5 class="text-bold">Do you wish to cancel this package ?</h5>
+                            <h5 class="text-bold">Do you wish to suspend this package ?</h5>
                             <hr>
-                            <form action="<?= url_to('customer.subscription.submit_cancel_request', $mySubscription['id']); ?>" method="post">
+                            <form action="<?= url_to('customer.subscription.submit_suspend_request', $mySubscription['id']); ?>" method="post">
                                 <?= csrf_field() ?>
                                 <div class="form-group">
                                     <label for="">Reason</label>
@@ -156,21 +156,35 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="">Feedback</label>
-                                    <textarea name="feedback" id="" cols="30" rows="3" class="form-control"><?= set_value('feedback') ?></textarea>
+                                    <label for="">Additional Comments</label>
+                                    <textarea name="additional_comment" id="" cols="30" rows="3" class="form-control"><?= set_value('additional_comment') ?></textarea>
 
-                                    <?php if ($validation->hasError('feedback')) : ?>
+                                    <?php if ($validation->hasError('additional_comment')) : ?>
                                         <br>
-                                        <div class="text-danger mt-1"><?= $validation->getError('feedback'); ?></div>
+                                        <div class="text-danger mt-1"><?= $validation->getError('additional_comment'); ?></div>
                                     <?php endif; ?>
                                 </div>
 
-                                <div class="form-group">
-                                    <input type="checkbox" name="email_notification" id="" class="mr-2">Would you like to receive a confirmation email upon cancellation?
-                                    <?php if ($validation->hasError('email_notification')) : ?>
-                                        <br>
-                                        <div class="text-danger mt-1"><?= $validation->getError('email_notification'); ?></div>
-                                    <?php endif; ?>
+                                <div class="row">
+                                    <div class="form-group col-12 col-md-6">
+                                        <label for="">Suspension Start Date</label>
+                                        <input type="date" name="from" id="" value="<?= set_value('from') ?>" class="form-control">
+
+                                        <?php if ($validation->hasError('from')) : ?>
+                                            <br>
+                                            <div class="text-danger mt-1"><?= $validation->getError('from'); ?></div>
+                                        <?php endif; ?>
+                                    </div>
+
+                                    <div class="form-group col-12 col-md-6">
+                                        <label for="">Suspension End Date</label>
+                                        <input type="date" name="to" id="" value="<?= set_value('to') ?>" class="form-control">
+
+                                        <?php if ($validation->hasError('to')) : ?>
+                                            <br>
+                                            <div class="text-danger mt-1"><?= $validation->getError('to'); ?></div>
+                                        <?php endif; ?>
+                                    </div>
                                 </div>
 
                                 <div class="form-group">
@@ -180,6 +194,7 @@
                                         <div class="text-danger mt-1"><?= $validation->getError('terms_and_conditions'); ?></div>
                                     <?php endif; ?>
                                 </div>
+
 
                                 <button class="btn btn-primary btn-sm">
                                     <i class="fa fa-paper-plane"></i>

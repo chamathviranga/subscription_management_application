@@ -37,6 +37,10 @@ $routes->group('', ['filter' => 'session'], static function ($routes) {
         $routes->put('edit/(:num)', 'CustomerSubscriptionsController::update/$1', ['as' => 'customer.subscription.update']);
 
         $routes->get('cancel/(:num)', 'CustomerSubscriptionsController::cancel/$1', ['as' => 'customer.subscription.cancel']);
+        $routes->post('cancel/(:num)', 'CustomerSubscriptionsController::submitCancelRequest/$1', ['as' => 'customer.subscription.submit_cancel_request']);
+
+        $routes->get('suspend/(:num)', 'CustomerSubscriptionsController::suspend/$1', ['as' => 'customer.subscription.suspend']);
+        $routes->post('suspend/(:num)', 'CustomerSubscriptionsController::submitSuspendRequest/$1', ['as' => 'customer.subscription.submit_suspend_request']);
 
     });
 

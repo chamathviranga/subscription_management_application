@@ -49,6 +49,7 @@
                                     <th scope="col">Country</th>
                                     <th scope="col">Subscription</th>
                                     <th scope="col">Payment Method</th>
+                                    <th scope="col">Status</th>
                                     <th scope="col">Action</th>
                                 </tr>
                             </thead>
@@ -67,8 +68,25 @@
                                         <td><?= $subscription['subscription_name'] ?></td>
                                         <td><?= $subscription['payment_method_name'] ?></td>
                                         <td>
+                                            <?php  
+                                                if($subscription['status'] == 'active') {
+                                                    echo '<span class="badge badge-success">Active</span>';
+                                                }
+
+                                                if($subscription['status'] == 'cancelled') {
+                                                    echo '<span class="badge badge-danger">Cancelled</span>';
+                                                }
+
+                                                if($subscription['status'] == 'suspended') {
+                                                    echo '<span class="badge badge-warning">Suspended</span>';
+                                                }
+
+                                            ?>
+                                        
+                                        </td>
+                                        <td>
                                             <a class="btn btn-info btn-sm" href="<?=  url_to("customer.subscription.edit", $subscription['id']) ?>"><i class="fa fa-edit"></i>Edit</a>
-                                            <a class="btn btn-warning btn-sm" href=""><i class="fas fa-ban"></i>Suspend</a>
+                                            <a class="btn btn-warning btn-sm" href="<?=  url_to("customer.subscription.suspend", $subscription['id']) ?>"><i class="fas fa-ban"></i>Suspend</a>
                                             <a class="btn btn-danger btn-sm" href="<?=  url_to("customer.subscription.cancel", $subscription['id']) ?>"><i class="fas fa-times"></i></i>Cancel</a>
                                         </td>
                                     </tr>

@@ -7,11 +7,21 @@ use App\Models\PaymentMethod;
 use App\Models\CustomerSubscription;
 use App\Models\Subscription;
 use App\Models\CustomerRequest;
+use App\Models\Feedback;
 use CodeIgniter\HTTP\RedirectResponse;
-
+use \Config\Database;
+use Exception;
 
 class CustomerSubscriptionsController extends BaseController
 {
+
+    private $db;
+
+    public function __construct()
+    {
+        $this->db = Database::connect();
+    }
+
     public function index(): string
     {
         $CustomerSubscriptionModel = new CustomerSubscription();
@@ -82,7 +92,7 @@ class CustomerSubscriptionsController extends BaseController
         return redirect()->back()->with('success', 'You successfully made a subscription.');
     }
 
-    public function edit($id): string
+    public function edit(int $id): string
     {
         helper('form');
 
@@ -118,7 +128,7 @@ class CustomerSubscriptionsController extends BaseController
         );
     }
 
-    public function update(int $subscriptionId): string|RedirectResponse
+    public function update(int $id): string|RedirectResponse
     {
         helper('form');
 
@@ -138,7 +148,7 @@ class CustomerSubscriptionsController extends BaseController
             'terms_and_conditions' => ['label' => 'terms and conditions', 'rules' => 'required'],
             'additional_comments' => ['label' => 'additional comments', 'rules' => 'max_length[255]'],
         ])) {
-            return $this->edit($subscriptionId);
+            return $this->edit($id);
         }
 
         $subscriptionData = $this->validator->getValidated();
@@ -175,8 +185,7 @@ class CustomerSubscriptionsController extends BaseController
         return redirect()->back()->with('success', 'You have successfully requested an update to the subscription.');
     }
 
-
-    public function cancel($id): string
+    public function cancel(int $id): string
     {
         helper('form');
 
@@ -212,4 +221,141 @@ class CustomerSubscriptionsController extends BaseController
         );
     }
 
+    public function submitCancelRequest(int $id)
+    {
+        helper('form');
+
+        if (!$this->validate([
+            'terms_and_conditions' => ['label' => 'terms and conditions', 'rules' => 'required'],
+            'email_notification' => ['email notification' => 'terms and conditions', 'rules' => 'permit_empty'],
+            'reason' => ['label' => 'reason', 'rules' => 'required|max_length[255]'],
+            'feedback' => ['label' => 'feedback', 'rules' => 'required|max_length[255]'],
+        ])) {
+            return $this->cancel($id);
+        }
+
+        $cancellationData = $this->validator->getValidated();
+
+        $model = model(CustomerRequest::class);
+        $feedback = model(Feedback::class);
+        $subscription = model(CustomerSubscription::class);
+
+        $this->db->transStart();
+        try {
+            $model->save([
+                'customer_id' => auth()->user()->id,
+                'type' => 'subscription_cancellation',
+                'payload' => json_encode([
+                    'email' => $cancellationData['email_notification'] ? 1 : 0,
+                    'reason' => $cancellationData['reason'],
+                    'feedback' => $cancellationData['feedback']
+                ])
+            ]);
+
+            $feedback->save([
+                'customer_id' => auth()->user()->id,
+                'feedback' => $cancellationData['feedback']
+            ]);
+
+            $subscription->update($id, [
+                'status' => 'cancelled'
+            ]);
+
+            $this->db->transCommit();
+        } catch (Exception $e) {
+            $this->db->trans_rollback();
+            return redirect()->back()->with('error', 'Transaction failed: ' . $e->getMessage());
+        }
+
+
+
+        return redirect()->back()->with('success', 'You have successfully requested to cancel the subscription.');
+    }
+
+
+    public function suspend(int $id): string
+    {
+        helper('form');
+
+        $paymentMethodsModel = new PaymentMethod();
+        $paymentMethods = $paymentMethodsModel->findAll();
+
+        $subscriptionModel = new Subscription();
+        $subscriptions = $subscriptionModel->findAll();
+
+        $CustomerSubscriptionModel = new CustomerSubscription();
+
+        $mySubscription = $CustomerSubscriptionModel
+            ->select([
+                'customer_subscriptions.*',
+                'subscriptions.name as subscription_name',
+                'subscriptions.price as subscription_price',
+                'subscriptions.duration as subscription_duration',
+                'payment_methods.method as payment_method_name'
+            ])
+            ->join('subscriptions', 'subscriptions.id = customer_subscriptions.subscription_id')
+            ->join('payment_methods', 'payment_methods.id = customer_subscriptions.payment_method')
+            ->where('customer_id', auth()->user()->id)
+            ->where('customer_subscriptions.id', (int)$id)
+            ->first();
+
+        return view(
+            'pages/customer/subscription/suspend.page.php',
+            [
+                'paymentMethods' => $paymentMethods,
+                'subscriptions' => $subscriptions,
+                'mySubscription' => $mySubscription ?? []
+            ]
+        );
+    }
+
+    public function submitSuspendRequest(int $id)
+    {
+        helper('form');
+
+        if (!$this->validate([
+            'terms_and_conditions' => ['label' => 'terms and conditions', 'rules' => 'required'],
+            'reason' => ['label' => 'reason', 'rules' => 'required|max_length[255]'],
+            'additional_comment' => ['label' => 'additional comment', 'rules' => 'max_length[255]'],
+            'from' => ['label' => 'start date', 'rules' => 'required|valid_date'],
+            'to'   => ['label' => 'end date', 'rules' => 'required|valid_date'],
+        ])) {
+            return $this->suspend($id);
+        }
+
+        $cancellationData = $this->validator->getValidated();
+
+        $model = model(CustomerRequest::class);
+        $subscription = model(CustomerSubscription::class);
+
+        $this->db->transStart();
+        try {
+            $model->save([
+                'customer_id' => auth()->user()->id,
+                'type' => 'subscription_suspend',
+                'payload' => json_encode([
+                    'reason' => $cancellationData['reason'],
+                    'additional_comment' => $cancellationData['additional_comment'],
+                    'from' => $cancellationData['from'],
+                    'to' => $cancellationData['to']
+                ])
+            ]);
+
+
+            $subscription->update($id, [
+                'status' => 'suspended'
+            ]);
+
+            $this->db->transCommit();
+        } catch (Exception $e) {
+            $this->db->transRollback();
+            return redirect()->back()->with('error', 'Transaction failed: ' . $e->getMessage());
+        }
+
+
+
+        return redirect()->back()->with('success', 'You have successfully requested to cancel the subscription.');
+    }
+
+    
 }
