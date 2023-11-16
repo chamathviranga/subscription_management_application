@@ -65,10 +65,19 @@
 
                             <div class="form-group">
                                 <label for="">Price (LKR) <span class="text-danger">*</span></label>
-                                <input type="number" name="price" class="form-control text-right" placeholder="1200.00" value="<?= set_value('price') ?>">
+                                <input type="number" name="price" min="0" class="form-control text-right" placeholder="1200.00" value="<?= set_value('price') ?>">
 
                                 <?php if ($validation->hasError('price')) : ?>
                                     <div class="text-danger mt-1"><?= $validation->getError('price'); ?></div>
+                                <?php endif; ?>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="">Duration (Months) <span class="text-danger">*</span></label>
+                                <input type="number" name="duration" min="1" class="form-control text-right" placeholder="12" value="<?= set_value('duration') ?>">
+
+                                <?php if ($validation->hasError('duration')) : ?>
+                                    <div class="text-danger mt-1"><?= $validation->getError('duration'); ?></div>
                                 <?php endif; ?>
                             </div>
 

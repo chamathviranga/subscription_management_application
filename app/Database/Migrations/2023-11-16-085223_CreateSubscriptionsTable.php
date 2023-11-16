@@ -38,6 +38,12 @@ class CreateSubscriptionsTable extends Migration
                 'null' => false, 
                 'default' => 0.0,
             ],
+            'price' => [
+                'type' => 'INT',
+                'constraint' => 5,
+                'null' => false, 
+                'default' => 1,
+            ],
         ]);
 
         $this->forge->addKey('id', true);

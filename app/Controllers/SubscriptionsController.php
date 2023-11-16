@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use App\Models\Subscription;
+use \CodeIgniter\HTTP\RedirectResponse;
 
 class SubscriptionsController extends BaseController
 {
@@ -24,7 +25,7 @@ class SubscriptionsController extends BaseController
     }
 
     // Submit new subscription
-    public function submit()
+    public function submit()//: string | RedirectResponse
     {
         helper('form');
 
@@ -33,6 +34,7 @@ class SubscriptionsController extends BaseController
             'name' => 'required|max_length[100]|min_length[3]',
             'description'  => 'required|max_length[255]|min_length[3]',
             'price'  => 'required|numeric',
+            'duration'  => 'required|numeric',
         ])) {
             // The validation fails, so returns the form.
             return $this->create();
@@ -47,6 +49,7 @@ class SubscriptionsController extends BaseController
             'name' => $subscription['name'],
             'description'  => $subscription['description'],
             'price'  => $subscription['price'],
+            'duration'  => $subscription['duration'],
         ]);
 
         return redirect()->back()->with('success', "New subscription addedd successfully.");

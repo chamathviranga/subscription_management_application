@@ -28,10 +28,10 @@ $routes->group('', ['filter' => 'session'], static function ($routes) {
 
     // Only for customers
     $routes->group('subscription', static function ($routes) {
-        $routes->get('list', 'SubscriptionsController::index', ['as' => 'subscription.list']);
+        $routes->get('list', 'CustomerSubscriptionsController::index', ['as' => 'customer.subscription.list']);
 
-        $routes->get('create', 'SubscriptionsController::create', ['as' => 'subscription.create']);
-        $routes->post('create', 'SubscriptionsController::submit', ['as' => 'subscription.submit']);
+        $routes->get('create', 'CustomerSubscriptionsController::create', ['as' => 'customer.subscription.create']);
+        $routes->post('create', 'CustomerSubscriptionsController::submit', ['as' => 'customer.subscription.submit']);
     });
 
 });

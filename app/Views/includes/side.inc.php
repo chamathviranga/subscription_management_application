@@ -71,7 +71,17 @@
               Subscriptions
             </p>
           </a>
+        </li>
 
+        <hr>
+
+        <li class="nav-item">
+          <a href="<?= url_to("customer.subscription.list") ?>" class="nav-link">
+            <i class="fa fa-list"></i>
+            <p>
+              My Subscriptions
+            </p>
+          </a>
         </li>
 
       </ul>
