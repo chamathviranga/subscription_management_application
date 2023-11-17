@@ -9,14 +9,14 @@ class AddColumnToUsersTable extends Migration
     public function up()
     {
         // Add a new column
-        $this->forge->addColumn('users', [
-            'is_admin' => [
-                'type' => 'BOOLEAN',
-                'null' => false,
-                'defualt' => false,
-                'after' => 'active'
-            ],
-        ]);
+        // $this->forge->addColumn('users', [
+        //     'is_admin' => [
+        //         'type' => 'BOOLEAN',
+        //         'null' => false,
+        //         'defualt' => false,
+        //         'after' => 'active'
+        //     ],
+        // ]);
 
         // Modify an existing column
         // $this->forge->modifyColumn('example_table', [
@@ -31,7 +31,7 @@ class AddColumnToUsersTable extends Migration
     public function down()
     {
         // Reverse the modifications if needed
-        $this->forge->dropColumn('users', 'new_column');
+        //$this->forge->dropColumn('users', 'new_column');
         // $this->forge->modifyColumn('example_table', [
         //     'modified_column' => [
         //         'name' => 'existing_column',
