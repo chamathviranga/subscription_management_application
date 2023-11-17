@@ -439,8 +439,20 @@ class Auth extends ShieldAuth
     public function loginRedirect(): string
     {
         $session = session();
-        $url     = $session->getTempdata('beforeLoginUrl') ?? setting('Auth.redirects')['login'];
-
+        //$url     = $session->getTempdata('beforeLoginUrl') ?? setting('Auth.redirects')['login'];
+        $group = auth()->user()->getGroups()[0]; 
+        
+        switch ($group) {
+            case 'admin':
+                $url = url_to('subscription.list');
+                break;
+            case 'user':
+                $url = url_to('customer.subscription.list');
+                break;
+            default:
+                $url = url_to('logout');
+                break;
+        }
         return $this->getUrl($url);
     }
 
