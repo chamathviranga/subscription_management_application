@@ -42,6 +42,10 @@ $routes->group('', ['filter' => 'session'], static function ($routes) {
         $routes->get('suspend/(:num)', 'CustomerSubscriptionsController::suspend/$1', ['as' => 'customer.subscription.suspend']);
         $routes->post('suspend/(:num)', 'CustomerSubscriptionsController::submitSuspendRequest/$1', ['as' => 'customer.subscription.submit_suspend_request']);
 
+        $routes->get('renew/(:num)', 'BillingController::index/$1', ['as' => 'customer.subscription.renew']);
+        $routes->post('renew/(:num)', 'BillingController::submitRenew/$1', ['as' => 'customer.subscription.submit_renew']);
+
+
         $routes->get('billing-dispute/(:num)', 'BillingDisputeController::index/$1', ['as' => 'customer.billing_dispute']);
         $routes->post('billing-dispute/(:num)', 'BillingDisputeController::submitBillingDispute/$1', ['as' => 'customer.submit_billing_dispute']);
     });

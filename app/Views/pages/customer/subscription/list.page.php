@@ -93,6 +93,7 @@
                                             <a class="btn mt-1 btn-warning btn-sm" href="<?= url_to("customer.subscription.suspend", $subscription['id']) ?>"><i class="fas fa-ban"></i>Suspend</a>
                                             <a class="btn mt-1 btn-danger btn-sm" href="<?= url_to("customer.subscription.cancel", $subscription['id']) ?>"><i class="fas fa-times"></i>Cancel</a>
                                             <a class="btn mt-1 btn-dark btn-sm" href="<?= url_to("customer.billing_dispute", $subscription['id']) ?>"><i class="fa fa-cash-register"></i>Billing Dispute</a>
+                                            <a class="btn mt-1 btn-primary btn-sm" href="<?= url_to("customer.subscription.renew", $subscription['id']) ?>"><i class="fas fa-money-bill-wave-alt"></i>Renew</a>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>

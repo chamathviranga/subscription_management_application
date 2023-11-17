@@ -46,7 +46,7 @@ class BillingDisputeController extends BaseController
             ])
             ->join('subscriptions', 'subscriptions.id = customer_subscriptions.subscription_id')
             ->join('payment_methods', 'payment_methods.id = customer_subscriptions.payment_method')
-            ->join('billing', 'billing.subscription_id = customer_subscriptions.id')
+            ->join('billing', 'billing.subscription_id = customer_subscriptions.id AND billing.status = "valid"', 'left')
             ->where('customer_subscriptions.customer_id', auth()->user()->id)
             ->where('customer_subscriptions.id', (int)$id)
             ->first();
