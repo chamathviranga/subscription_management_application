@@ -40,6 +40,6 @@ class Subscriptions extends Seeder
         ];
 
 
-        $this->db->table('your_table_name')->insertBatch($data);
+        $this->db->table('subscriptions')->insertBatch($data);
     }
 }
