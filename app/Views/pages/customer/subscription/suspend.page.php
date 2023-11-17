@@ -117,7 +117,7 @@
                                     </tr>
                                     <tr>
                                         <td>Next Billing</td>
-                                        <td><?= $modifiedDateString = date('Y-m-d', strtotime('+' .  $mySubscription['subscription_duration'] . ' months', strtotime($mySubscription['created_at'])));; ?></td>
+                                        <td><?= $mySubscription['valid_to']; ?></td>
                                     </tr>
                                 </tbody>
                             </table>

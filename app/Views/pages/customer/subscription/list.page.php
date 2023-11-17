@@ -49,6 +49,8 @@
                                     <th scope="col">Country</th>
                                     <th scope="col">Subscription</th>
                                     <th scope="col">Payment Method</th>
+                                    <th scope="col">Valid From</th>
+                                    <th scope="col">Valid To</th>
                                     <th scope="col">Status</th>
                                     <th scope="col">Action</th>
                                 </tr>
@@ -67,6 +69,8 @@
                                         <td><?= $subscription['billing_country'] ?></td>
                                         <td><?= $subscription['subscription_name'] ?></td>
                                         <td><?= $subscription['payment_method_name'] ?></td>
+                                        <td><?= $subscription['valid_from'] ?></td>
+                                        <td><?= $subscription['valid_to'] ?></td>
                                         <td>
                                             <?php
                                             if ($subscription['status'] == 'active') {

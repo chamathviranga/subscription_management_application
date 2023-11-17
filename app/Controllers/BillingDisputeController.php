@@ -40,11 +40,14 @@ class BillingDisputeController extends BaseController
                 'subscriptions.name as subscription_name',
                 'subscriptions.price as subscription_price',
                 'subscriptions.duration as subscription_duration',
-                'payment_methods.method as payment_method_name'
+                'payment_methods.method as payment_method_name',
+                'date(billing.valid_from) as valid_from',
+                'date(billing.valid_to) as valid_to',
             ])
             ->join('subscriptions', 'subscriptions.id = customer_subscriptions.subscription_id')
             ->join('payment_methods', 'payment_methods.id = customer_subscriptions.payment_method')
-            ->where('customer_id', auth()->user()->id)
+            ->join('billing', 'billing.subscription_id = customer_subscriptions.id')
+            ->where('customer_subscriptions.customer_id', auth()->user()->id)
             ->where('customer_subscriptions.id', (int)$id)
             ->first();
 

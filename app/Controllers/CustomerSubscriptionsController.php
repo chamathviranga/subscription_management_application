@@ -8,6 +8,7 @@ use App\Models\CustomerSubscription;
 use App\Models\Subscription;
 use App\Models\CustomerRequest;
 use App\Models\Feedback;
+use App\Models\Billing;
 use CodeIgniter\HTTP\RedirectResponse;
 use \Config\Database;
 use Exception;
@@ -26,10 +27,17 @@ class CustomerSubscriptionsController extends BaseController
     {
         $CustomerSubscriptionModel = new CustomerSubscription();
         $mySubscriptions = $CustomerSubscriptionModel
-            ->select(['customer_subscriptions.*', 'subscriptions.name as subscription_name', 'payment_methods.method as payment_method_name'])
+            ->select([
+                'customer_subscriptions.*',
+                'subscriptions.name as subscription_name',
+                'payment_methods.method as payment_method_name',
+                'date(billing.valid_from) as valid_from',
+                'date(billing.valid_to) as valid_to',
+            ])
             ->join('subscriptions', 'subscriptions.id = customer_subscriptions.subscription_id')
             ->join('payment_methods', 'payment_methods.id = customer_subscriptions.payment_method')
-            ->where('customer_id', auth()->user()->id)
+            ->join('billing', 'billing.subscription_id = customer_subscriptions.id')
+            ->where('customer_subscriptions.customer_id', auth()->user()->id)
             ->findAll();
 
         return view('pages/customer/subscription/list.page.php', ['mySubscriptions' => $mySubscriptions]);
@@ -74,20 +82,47 @@ class CustomerSubscriptionsController extends BaseController
         $subscriptionData = $this->validator->getValidated();
 
         $model = model(CustomerSubscription::class);
+        $billingModel = model(Billing::class);
 
-        $model->save([
-            'name' => $subscriptionData['name'],
-            'email' => $subscriptionData['email'],
-            'phone' => $subscriptionData['phone'],
-            'billing_street' => $subscriptionData['billing_street'],
-            'billing_city' => $subscriptionData['billing_city'],
-            'billing_state' => $subscriptionData['billing_state'],
-            'billing_postal_code' => $subscriptionData['billing_postal_code'],
-            'billing_country' => $subscriptionData['billing_country'],
-            'subscription_id' => $subscriptionData['subscription'],
-            'payment_method' => $subscriptionData['payment_method'],
-            'customer_id' => auth()->user()->id
-        ]);
+        $this->db->transStart();
+        try {
+
+            // Get selectes subscription duraion
+            $choosedSubscription = (new Subscription())
+                ->select(['duration', 'price'])
+                ->find($subscriptionData['subscription']);
+
+            $validTo = date('Y-m-d', strtotime('+' .  $choosedSubscription['duration'] . ' months', strtotime(date('Y-m-d'))));
+
+
+            $model->save([
+                'name' => $subscriptionData['name'],
+                'email' => $subscriptionData['email'],
+                'phone' => $subscriptionData['phone'],
+                'billing_street' => $subscriptionData['billing_street'],
+                'billing_city' => $subscriptionData['billing_city'],
+                'billing_state' => $subscriptionData['billing_state'],
+                'billing_postal_code' => $subscriptionData['billing_postal_code'],
+                'billing_country' => $subscriptionData['billing_country'],
+                'subscription_id' => $subscriptionData['subscription'],
+                'payment_method' => $subscriptionData['payment_method'],
+                'customer_id' => auth()->user()->id
+            ]);
+
+            $billingModel->save([
+                'customer_id' => auth()->user()->id,
+                'subscription_id' => $model->insertID(),
+                'valid_from' => date('Y-m-d'),
+                'valid_to' => $validTo,
+                'price' => $choosedSubscription['price'],
+                'status' => 'valid',
+            ]);
+
+            $this->db->transCommit();
+        } catch (Exception $e) {
+            $this->db->transRollback();
+            return redirect()->back()->with('error', 'Transaction failed: ' . $e->getMessage());
+        }
 
         return redirect()->back()->with('success', 'You successfully made a subscription.');
     }
@@ -203,11 +238,14 @@ class CustomerSubscriptionsController extends BaseController
                 'subscriptions.name as subscription_name',
                 'subscriptions.price as subscription_price',
                 'subscriptions.duration as subscription_duration',
-                'payment_methods.method as payment_method_name'
+                'payment_methods.method as payment_method_name',
+                'date(billing.valid_from) as valid_from',
+                'date(billing.valid_to) as valid_to',
             ])
             ->join('subscriptions', 'subscriptions.id = customer_subscriptions.subscription_id')
             ->join('payment_methods', 'payment_methods.id = customer_subscriptions.payment_method')
-            ->where('customer_id', auth()->user()->id)
+            ->join('billing', 'billing.subscription_id = customer_subscriptions.id')
+            ->where('customer_subscriptions.customer_id', auth()->user()->id)
             ->where('customer_subscriptions.id', (int)$id)
             ->first();
 
@@ -263,7 +301,7 @@ class CustomerSubscriptionsController extends BaseController
 
             $this->db->transCommit();
         } catch (Exception $e) {
-            $this->db->trans_rollback();
+            $this->db->transRollback();
             return redirect()->back()->with('error', 'Transaction failed: ' . $e->getMessage());
         }
 
@@ -291,11 +329,14 @@ class CustomerSubscriptionsController extends BaseController
                 'subscriptions.name as subscription_name',
                 'subscriptions.price as subscription_price',
                 'subscriptions.duration as subscription_duration',
-                'payment_methods.method as payment_method_name'
+                'payment_methods.method as payment_method_name',
+                'date(billing.valid_from) as valid_from',
+                'date(billing.valid_to) as valid_to',
             ])
             ->join('subscriptions', 'subscriptions.id = customer_subscriptions.subscription_id')
             ->join('payment_methods', 'payment_methods.id = customer_subscriptions.payment_method')
-            ->where('customer_id', auth()->user()->id)
+            ->join('billing', 'billing.subscription_id = customer_subscriptions.id')
+            ->where('customer_subscriptions.customer_id', auth()->user()->id)
             ->where('customer_subscriptions.id', (int)$id)
             ->first();
 
@@ -356,6 +397,4 @@ class CustomerSubscriptionsController extends BaseController
 
         return redirect()->back()->with('success', 'You have successfully requested to cancel the subscription.');
     }
-
-    
 }
