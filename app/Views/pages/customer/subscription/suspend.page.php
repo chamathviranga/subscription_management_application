@@ -12,7 +12,7 @@
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="#">Edit</a></li>
+                        <li class="breadcrumb-item"><a href="#">Suspend</a></li>
                         <li class="breadcrumb-item active">Subscription</li>
                     </ol>
                 </div>

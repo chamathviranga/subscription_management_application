@@ -18,7 +18,7 @@ $routes->group('', ['filter' => 'session'], static function ($routes) {
         return "Success";
     });
 
-    // Only for admin user
+    // Only for admin user - need to setup filter : Extra
     $routes->group('admin/subscription', static function ($routes) {
         $routes->get('list', 'SubscriptionsController::index', ['as' => 'subscription.list']);
 
@@ -41,6 +41,10 @@ $routes->group('', ['filter' => 'session'], static function ($routes) {
 
         $routes->get('suspend/(:num)', 'CustomerSubscriptionsController::suspend/$1', ['as' => 'customer.subscription.suspend']);
         $routes->post('suspend/(:num)', 'CustomerSubscriptionsController::submitSuspendRequest/$1', ['as' => 'customer.subscription.submit_suspend_request']);
+
+        $routes->get('billing-dispute/(:num)', 'BillingDisputeController::index/$1', ['as' => 'customer.billing_dispute']);
+        $routes->post('billing-dispute/(:num)', 'BillingDisputeController::submitBillingDispute/$1', ['as' => 'customer.submit_billing_dispute']);
+
 
     });
 

@@ -309,7 +309,7 @@ class CustomerSubscriptionsController extends BaseController
         );
     }
 
-    public function submitSuspendRequest(int $id)
+    public function submitSuspendRequest(int $id): string|RedirectResponse
     {
         helper('form');
 

@@ -68,7 +68,7 @@
           <a href="<?= url_to("subscription.list") ?>" class="nav-link">
             <i class="fa fa-list"></i>
             <p>
-              Subscriptions
+              Subscriptions (Admin)
             </p>
           </a>
         </li>
