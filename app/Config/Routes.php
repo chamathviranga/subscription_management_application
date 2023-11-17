@@ -1,6 +1,8 @@
 <?php
 
 use CodeIgniter\Router\RouteCollection;
+use App\Filters\IsAdmin;
+use App\Filters\IsUser;
 
 /**
  * @var RouteCollection $routes
@@ -14,12 +16,10 @@ $routes->get('/', function () {
 service('auth')->routes($routes);
 
 $routes->group('', ['filter' => 'session'], static function ($routes) {
-    $routes->get('test', function () {
-        return "Success";
-    });
+
 
     // Only for admin user - need to setup filter : Extra
-    $routes->group('admin/subscription', static function ($routes) {
+    $routes->group('admin/subscription', ['filter' => IsAdmin::class], static function ($routes) {
         $routes->get('list', 'SubscriptionsController::index', ['as' => 'subscription.list']);
 
         $routes->get('create', 'SubscriptionsController::create', ['as' => 'subscription.create']);
@@ -27,7 +27,7 @@ $routes->group('', ['filter' => 'session'], static function ($routes) {
     });
 
     // Only for customers
-    $routes->group('subscription', static function ($routes) {
+    $routes->group('subscription', ['filter' => IsUser::class], static function ($routes) {
         $routes->get('list', 'CustomerSubscriptionsController::index', ['as' => 'customer.subscription.list']);
 
         $routes->get('create', 'CustomerSubscriptionsController::create', ['as' => 'customer.subscription.create']);
@@ -44,8 +44,5 @@ $routes->group('', ['filter' => 'session'], static function ($routes) {
 
         $routes->get('billing-dispute/(:num)', 'BillingDisputeController::index/$1', ['as' => 'customer.billing_dispute']);
         $routes->post('billing-dispute/(:num)', 'BillingDisputeController::submitBillingDispute/$1', ['as' => 'customer.submit_billing_dispute']);
-
-
     });
-
 });

@@ -14,6 +14,7 @@
       </div>
       <div class="info">
         <a href="#" class="d-block"><?= auth()->user()->username; ?></a>
+        <small class="text-white">Group: <?= auth()->user()->getGroups()[0]; ?></small>
       </div>
     </div>
 
@@ -64,22 +65,33 @@
               </ul>
             </li> -->
 
-        <li class="nav-item">
-          <a href="<?= url_to("subscription.list") ?>" class="nav-link">
-            <i class="fa fa-list"></i>
-            <p>
-              Subscriptions (Admin)
-            </p>
-          </a>
-        </li>
+        <?php if (auth()->user()->inGroup('admin')) : ?>
+          <li class="nav-item">
+            <a href="<?= url_to("subscription.list") ?>" class="nav-link">
+              <i class="fa fa-list"></i>
+              <p>
+                Subscriptions (Admin)
+              </p>
+            </a>
+          </li>
+        <?php endif; ?>
 
-        <hr>
+        <?php if (auth()->user()->inGroup('user')) : ?>
+          <li class="nav-item">
+            <a href="<?= url_to("customer.subscription.list") ?>" class="nav-link">
+              <i class="fa fa-list"></i>
+              <p>
+                My Subscriptions
+              </p>
+            </a>
+          </li>
+        <?php endif; ?>
 
         <li class="nav-item">
-          <a href="<?= url_to("customer.subscription.list") ?>" class="nav-link">
-            <i class="fa fa-list"></i>
+          <a href="<?= url_to("logout") ?>" class="nav-link">
+            <i class="fas fa-sign-out-alt"></i>
             <p>
-              My Subscriptions
+              Logout
             </p>
           </a>
         </li>
