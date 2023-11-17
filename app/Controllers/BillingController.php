@@ -15,10 +15,12 @@ class BillingController extends BaseController
 {
 
     private $db;
+    private $userId;
 
     public function __construct()
     {
         $this->db = Database::connect();
+        $this->userId = auth()->user()->id;
     }
 
     public function index(int $id): string
@@ -46,7 +48,7 @@ class BillingController extends BaseController
             ->join('subscriptions', 'subscriptions.id = customer_subscriptions.subscription_id')
             ->join('payment_methods', 'payment_methods.id = customer_subscriptions.payment_method')
             ->join('billing', 'billing.subscription_id = customer_subscriptions.id AND billing.status = "valid"', 'left')
-            ->where('customer_subscriptions.customer_id', auth()->user()->id)
+            ->where('customer_subscriptions.customer_id', $this->userId)
             ->where('customer_subscriptions.id', (int)$id)
             ->first();
 
@@ -92,7 +94,7 @@ class BillingController extends BaseController
             // Get last valid payment expire date
             $currentPayment = $billing
                             ->select('valid_to')
-                            ->where('customer_id', auth()->user()->id)
+                            ->where('customer_id', $this->userId)
                             ->where('subscription_id', $id)
                             ->where('status', 'valid')
                             ->orderBy('created_at', 'desc')
@@ -105,14 +107,14 @@ class BillingController extends BaseController
                 ->set([
                     'status' => 'renewed'
                 ])
-                ->where('customer_id', auth()->user()->id)
+                ->where('customer_id', $this->userId)
                 ->where('subscription_id', $id)
                 ->where('status', 'valid')
                 ->update();
            
             // Insert new payment
             $billing->save([
-                'customer_id' => auth()->user()->id,
+                'customer_id' => $this->userId,
                 'subscription_id' => $id,
                 'valid_from' => date('Y-m-d'),
                 'valid_to' => $validTo,
@@ -121,9 +123,13 @@ class BillingController extends BaseController
             ]);
 
             // Update payment method
-            $subscription->update($id,[
+            $subscription
+            ->set([
                 'payment_method' => $renewalData['payment_method']
-            ]);
+            ])
+            ->where('id', $id)
+            ->where('customer_id', $this->userId)
+            ->update();
 
             $this->db->transCommit();
         } catch (Exception $e) {

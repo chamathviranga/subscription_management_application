@@ -17,10 +17,12 @@ class CustomerSubscriptionsController extends BaseController
 {
 
     private $db;
+    private $userId;
 
     public function __construct()
     {
         $this->db = Database::connect();
+        $this->userId = auth()->user()->id;
     }
 
     public function index(): string
@@ -37,7 +39,7 @@ class CustomerSubscriptionsController extends BaseController
             ->join('subscriptions', 'subscriptions.id = customer_subscriptions.subscription_id')
             ->join('payment_methods', 'payment_methods.id = customer_subscriptions.payment_method')
             ->join('billing', 'billing.subscription_id = customer_subscriptions.id AND billing.status = "valid"', 'left')
-            ->where('customer_subscriptions.customer_id', auth()->user()->id)
+            ->where('customer_subscriptions.customer_id', $this->userId)
             ->findAll();
 
         return view('pages/customer/subscription/list.page.php', ['mySubscriptions' => $mySubscriptions]);
@@ -106,11 +108,11 @@ class CustomerSubscriptionsController extends BaseController
                 'billing_country' => $subscriptionData['billing_country'],
                 'subscription_id' => $subscriptionData['subscription'],
                 'payment_method' => $subscriptionData['payment_method'],
-                'customer_id' => auth()->user()->id
+                'customer_id' => $this->userId
             ]);
 
             $billingModel->save([
-                'customer_id' => auth()->user()->id,
+                'customer_id' => $this->userId,
                 'subscription_id' => $model->insertID(),
                 'valid_from' => date('Y-m-d'),
                 'valid_to' => $validTo,
@@ -149,7 +151,7 @@ class CustomerSubscriptionsController extends BaseController
             ])
             ->join('subscriptions', 'subscriptions.id = customer_subscriptions.subscription_id')
             ->join('payment_methods', 'payment_methods.id = customer_subscriptions.payment_method')
-            ->where('customer_id', auth()->user()->id)
+            ->where('customer_id', $this->userId)
             ->where('customer_subscriptions.id', (int)$id)
             ->first();
 
@@ -193,7 +195,7 @@ class CustomerSubscriptionsController extends BaseController
         $newPackage = $subscriptionData['subscription_upgrade'] ? $subscriptionData['subscription_upgrade'] : $subscriptionData['subscription_downgrade'];
 
         $model->save([
-            'customer_id' => auth()->user()->id,
+            'customer_id' => $this->userId,
             'type' => 'subscription_modification',
             'payload' => json_encode([
                 'subscription_details' => [
@@ -245,7 +247,7 @@ class CustomerSubscriptionsController extends BaseController
             ->join('subscriptions', 'subscriptions.id = customer_subscriptions.subscription_id')
             ->join('payment_methods', 'payment_methods.id = customer_subscriptions.payment_method')
             ->join('billing', 'billing.subscription_id = customer_subscriptions.id AND billing.status = "valid"', 'left')
-            ->where('customer_subscriptions.customer_id', auth()->user()->id)
+            ->where('customer_subscriptions.customer_id', $this->userId)
             ->where('customer_subscriptions.id', (int)$id)
             ->first();
 
@@ -281,7 +283,7 @@ class CustomerSubscriptionsController extends BaseController
         $this->db->transStart();
         try {
             $model->save([
-                'customer_id' => auth()->user()->id,
+                'customer_id' => $this->userId,
                 'type' => 'subscription_cancellation',
                 'payload' => json_encode([
                     'email' => $cancellationData['email_notification'] ? 1 : 0,
@@ -291,13 +293,17 @@ class CustomerSubscriptionsController extends BaseController
             ]);
 
             $feedback->save([
-                'customer_id' => auth()->user()->id,
+                'customer_id' => $this->userId,
                 'feedback' => $cancellationData['feedback']
             ]);
 
-            $subscription->update($id, [
+            $subscription
+            ->set([
                 'status' => 'cancelled'
-            ]);
+            ])
+            ->where('id', $id)
+            ->where('customer_id', $this->userId)
+            ->update();
 
             $this->db->transCommit();
         } catch (Exception $e) {
@@ -336,7 +342,7 @@ class CustomerSubscriptionsController extends BaseController
             ->join('subscriptions', 'subscriptions.id = customer_subscriptions.subscription_id')
             ->join('payment_methods', 'payment_methods.id = customer_subscriptions.payment_method')
             ->join('billing', 'billing.subscription_id = customer_subscriptions.id AND billing.status = "valid"', 'left')
-            ->where('customer_subscriptions.customer_id', auth()->user()->id)
+            ->where('customer_subscriptions.customer_id', $this->userId)
             ->where('customer_subscriptions.id', (int)$id)
             ->first();
 
@@ -372,7 +378,7 @@ class CustomerSubscriptionsController extends BaseController
         $this->db->transStart();
         try {
             $model->save([
-                'customer_id' => auth()->user()->id,
+                'customer_id' => $this->userId,
                 'type' => 'subscription_suspend',
                 'payload' => json_encode([
                     'reason' => $cancellationData['reason'],
@@ -383,9 +389,13 @@ class CustomerSubscriptionsController extends BaseController
             ]);
 
 
-            $subscription->update($id, [
+            $subscription
+            ->set([
                 'status' => 'suspended'
-            ]);
+            ])
+            ->where('id', $id)
+            ->where('customer_id', $this->userId)
+            ->update();
 
             $this->db->transCommit();
         } catch (Exception $e) {

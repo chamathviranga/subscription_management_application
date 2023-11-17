@@ -16,10 +16,12 @@ class BillingDisputeController extends BaseController
 {
 
     private $db;
+    private $userId;
 
     public function __construct()
     {
         $this->db = Database::connect();
+        $this->userId = auth()->user()->id;
     }
 
     public function index(int $id): string
@@ -47,7 +49,7 @@ class BillingDisputeController extends BaseController
             ->join('subscriptions', 'subscriptions.id = customer_subscriptions.subscription_id')
             ->join('payment_methods', 'payment_methods.id = customer_subscriptions.payment_method')
             ->join('billing', 'billing.subscription_id = customer_subscriptions.id AND billing.status = "valid"', 'left')
-            ->where('customer_subscriptions.customer_id', auth()->user()->id)
+            ->where('customer_subscriptions.customer_id', $this->userId)
             ->where('customer_subscriptions.id', (int)$id)
             ->first();
 
@@ -93,7 +95,7 @@ class BillingDisputeController extends BaseController
             try {
 
                 $model->save([
-                    'customer_id' => auth()->user()->id,
+                    'customer_id' => $this->userId,
                     'subscription_id' => $id,
                     'issue' => $billingDisputeData['issue'],
                     'other_details' => $billingDisputeData['additional_info'],
